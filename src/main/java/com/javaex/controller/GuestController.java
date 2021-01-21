@@ -65,21 +65,24 @@ public class GuestController {
 		
 	}
 	
-	//시도해보기
+	//방법2
 	@RequestMapping(value="/deform2/{no}", method= {RequestMethod.GET ,RequestMethod.POST})	
-	public String deform2 (@PathVariable("no") int no) {		
+	public String deform2 (@PathVariable("no") int no,
+							Model model) {		
 		
 		System.out.println("삭제폼2");	
-		System.out.println(no); //여기로는 넘어오는데 deleteForm에서 param.no값으로 안불러와짐
+		
+		model.addAttribute(no); //no값을 보내줘야 param으로 값을 불러올수 있음 
 		return "deleteForm";	
 		
 	}
 	
 	@RequestMapping(value="/delete2", method= {RequestMethod.GET ,RequestMethod.POST})
 	public String delete2(@RequestParam("password") String password,
-						@RequestParam("no") int no) {
+			              @RequestParam("no") int no,
+						  Model model) {
+		
 		System.out.println("삭제2");
-		//System.out.println(guestVo);
 		
 		GuestVo guestVo = new GuestVo(no ,password);
 		
@@ -88,9 +91,15 @@ public class GuestController {
 		
 		if(count == 0) { //삭제실패
 			 System.out.println("비밀번호가 틀립니다.");
+			 
+			 model.addAttribute("count",count);
+			 model.addAttribute("no",guestVo.getNo()); //no값을 따로 보내줘야함. deform에 필요
 			
-			 return "deleteForm";			 
+			 return "redirect:/guest/deform"; 
+			 
 		}else {//삭제성공
+			
+			model.addAttribute("count",count);
 			
 			return "redirect:/guest/addList";
 		} 
@@ -113,7 +122,7 @@ public class GuestController {
 			 System.out.println("비밀번호가 틀립니다.");
 			 
 			 model.addAttribute("count",count);
-			 model.addAttribute("no",guestVo.getNo()); //no값을 따로 보내줘야함. 
+			 model.addAttribute("no",guestVo.getNo()); //no값을 따로 보내줘야함. deform에 필요
 			
 			 return "redirect:/guest/deform"; 
 			 
